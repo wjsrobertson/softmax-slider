@@ -1,0 +1,146 @@
+<html>
+<head>
+    <script src="libs/Chart.bundle.js"></script>
+    <script src="libs/jquery-3.2.1.min.js"></script>
+    <script src="libs/bootstrap/js/bootstrap.js"></script>
+    <script src="libs/slider/js/bootstrap-slider.js"></script>
+    <script src="libs/lodash.min.js"></script>
+    <script src="libs/html5shiv.min.js"></script>
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="libs/slider/css/slider.css">
+
+    <style>
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1>Panels</h1>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Category Values</h2>
+                </div>
+                <div class="panel-body">
+
+
+                    <div class="form-group">
+                        <button id="add-category" type="button" class="btn btn-default btn-md">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <label for="add-category"><small>Add new category</small></label>
+                    </div>
+
+                    <legend>Categories</legend>
+
+                    <div style="display:none" id="category-control-template">
+                        <div class="form-group">
+                            <div>
+                                <button title="remove" use="remove" type="button" class="btn btn-default btn-sm span1">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+
+                                <input use="slider" type="text" class="px-2 span6" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" data-slider-selection="after" data-slider-tooltip="hide">
+                                <!--
+                                <input type="number" size="5" min="0" max="100" />
+                                -->
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="category-controls" class="form-group">
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Softmax Output</h3>
+                </div>
+                <div class="panel-body">
+                    <canvas id="myChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        var state = {
+            maxCategories: 10,
+            categoryIdSequence: 0,
+            categories: []
+        };
+
+        function addNewCategory() {
+            var template = $('#category-control-template');
+            var control = template.children().first().clone().appendTo('#category-controls');
+            control.find("input[use='slider']").slider().on('slide', function(ev){
+                console.log('ok')
+            });
+            control.find("button[use='remove']").click(function(ev){
+                $(ev.target).parent().parent().remove()
+            });
+        }
+
+        $('#add-category').click(function() {
+            addNewCategory()
+        });
+
+        _.forEach(_.range(0, 6), function(id){
+            $('#dp' + id).slider()
+                .on('slide', function(ev){
+                    console.log('ok')
+                });
+        });
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
