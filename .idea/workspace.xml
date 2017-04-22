@@ -26,8 +26,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8266129">
-              <caret line="109" column="32" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.44354838">
+              <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -827,7 +827,7 @@
       <updated>1492635761321</updated>
       <workItem from="1492635762891" duration="8932000" />
       <workItem from="1492808090550" duration="31157000" />
-      <workItem from="1492885578609" duration="9287000" />
+      <workItem from="1492885578609" duration="9341000" />
     </task>
     <task id="LOCAL-00001" summary="Got dynamic updates working">
       <created>1492820871259</created>
@@ -883,11 +883,17 @@
       <option name="project" value="LOCAL" />
       <updated>1492893728267</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Look and feel">
+      <created>1492895368008</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1492895368008</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49376000" />
+    <option name="totallyTimeSpent" value="49430000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="52" width="1262" height="1148" extended-state="4" />
@@ -981,7 +987,8 @@
     <MESSAGE value="Bit of a cleanup" />
     <MESSAGE value="More cleanup" />
     <MESSAGE value="Fix bug in category creation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix bug in category creation" />
+    <MESSAGE value="Look and feel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Look and feel" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1049,8 +1056,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8266129">
-          <caret line="109" column="32" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.44354838">
+          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
           <folding />
         </state>
       </provider>
