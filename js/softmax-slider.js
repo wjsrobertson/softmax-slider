@@ -1,4 +1,4 @@
-function smax() {
+function smax(categoryControlTemplateId, categoryControlsId, addCategoryButtonId, softmaxChartContainerId, inputChartContainerId) {
     /*
      Factory for new categories (category names and colours)
      */
@@ -69,7 +69,7 @@ function smax() {
     /*
      Control for Chart.js instances
      */
-    var SoftmaxChart = (function (softmaxChartContainerId, inputChartContainerId) {
+    var SoftmaxChart = (function () {
         Chart.defaults.global.legend.display = false;
 
         var chartContainer = $('#' + softmaxChartContainerId);
@@ -174,12 +174,12 @@ function smax() {
                 render();
             }
         };
-    })('softmax-chart-container', 'input-chart-container');
+    })();
 
     /*
      Widget containing sliders for each category
      */
-    var CategoryWidget = (function (categoryControlsId) {
+    var CategoryWidget = (function () {
         var categoryControls = $('#' + categoryControlsId);
 
         function getCategorySliderContainer(index) {
@@ -205,7 +205,7 @@ function smax() {
                 getCategorySliderName(category.index).text(category.name);
             }
         }
-    })('category-controls');
+    })();
 
     /*
      Wrapper round data - softmax input and output
@@ -261,8 +261,7 @@ function smax() {
     /*
      init function - bind to page and setup a few initial categories
      */
-    (function (categoryControlTemplateId, categoryControlsId, addCategoryButtonId,
-               dataManager, categorySource, categoryWidget, chart) {
+    (function (dataManager, categorySource, categoryWidget, chart) {
 
         $('#' + addCategoryButtonId).click(function () {
             addNewCategory();
@@ -298,6 +297,5 @@ function smax() {
 
             console.log(DataManager.getData())
         }
-    })('category-control-template', 'category-controls', 'add-category',
-        DataManager, CategorySource, CategoryWidget, SoftmaxChart);
+    })(DataManager, CategorySource, CategoryWidget, SoftmaxChart);
 }
