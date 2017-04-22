@@ -1,0 +1,13 @@
+.template {
+    display: none;
+}
+
+.category-name {
+    padding: 3px;
+}
+
+#category-controls > div {
+    padding: 3px;
+    border: 1px solid;
+    border-radius: 6px;
+}
