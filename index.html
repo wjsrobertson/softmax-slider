@@ -334,11 +334,13 @@
                 },
                 setRawValue: function (index, value) {
                     rawValues[index] = value;
+
                     recalculate();
                 },
                 remove: function (index) {
                     rawValues.splice(index, 1);
                     softmaxValues.splice(index, 1);
+
                     recalculate();
                 },
                 getData: function () {
@@ -351,7 +353,7 @@
         }());
 
         /*
-        init function - bind to page and setup
+        init function - bind to page and setup a few initial categories
          */
         (function (categoryControlTemplateId, categoryControlsId, addCategoryButtonId,
                                dataManager, categorySource, categoryWidget, chart) {
@@ -359,6 +361,8 @@
             $('#' + addCategoryButtonId).click(function () {
                 addNewCategory();
             });
+
+            _.times(4, addNewCategory);
 
             function addNewCategory() {
                 var template = $('#' + categoryControlTemplateId).children().first();
@@ -384,6 +388,9 @@
 
                 categoryWidget.newSlider(category);
                 chart.newCategory(category);
+                chart.updateCategoryValues(DataManager.getData());
+
+                console.log(DataManager.getData())
             }
         })('category-control-template', 'category-controls', 'add-category',
                 DataManager, CategorySource, CategoryWidget, SoftmaxChart);
