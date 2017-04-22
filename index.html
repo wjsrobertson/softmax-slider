@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="libs/slider/css/slider.css">
 
     <style>
+        .template {
+            display:none;
+        }
     </style>
 </head>
 <body>
@@ -36,25 +39,16 @@
                     </label>
                 </div>
 
-                <div class="form-group">
-                    <button id="experiment" type="button" class="btn btn-default btn-md">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                    <label for="add-category">
-                        <small>Experiment!</small>
-                    </label>
-                </div>
-
                 <legend>Categories</legend>
 
-                <div style="display:none" id="category-control-template">
-                    <div class="form-group">
+                <div id="category-control-template" class="template">
+                    <div class="form-group" use="category-slider">
                         <div>
                             <button title="remove" use="remove" type="button" class="btn btn-default btn-sm span1">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
 
-                            <input use="slider" type="text" class="px-2 span6" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1"
+                            <input use="slider" type="text" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1"
                                    data-slider-value="0" data-slider-selection="after" data-slider-tooltip="hide">
                         </div>
 
@@ -72,7 +66,7 @@
                 <h3 class="panel-title">Softmax Output</h3>
             </div>
             <div class="panel-body">
-                <canvas id="myChart" width="300" height="300"></canvas>
+                <canvas id="chart-container" width="300" height="300"></canvas>
             </div>
         </div>
     </div>
@@ -80,7 +74,19 @@
 
 <script>
 
-    smax = {};
+    var smax = {};
+
+    smax.softmax = function(input) {
+        _.map(input, function(value) {
+            return value / 2;
+        })
+    };
+
+    smax.data = {
+        maxValue: 100,
+        raw: [],
+        softmax: []
+    };
 
     smax.CategorySource = (function () {
         var nameIndex = -1;
@@ -114,7 +120,8 @@
             'rgba(255, 206, 86, 0.2)',
             'rgba(75, 192, 192, 0.2)',
             'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'];
+            'rgba(255, 159, 64, 0.2)'
+        ];
 
         var borderColours = [
             'rgba(255,99,132,1)',
@@ -126,35 +133,35 @@
         ];
 
         function nextName() {
-            nameIndex = (nameIndex + 1) % names.length;
+            nameIndex = Math.floor(Math.random() * names.length);
             return names[nameIndex]
         }
 
-        function nextColours() {
+        function nextColour() {
             colourIndex = (colourIndex + 1) % backgroundColours.length;
-            return [backgroundColours[colourIndex], borderColours[colourIndex]];
+            return {background: backgroundColours[colourIndex], border: borderColours[colourIndex]};
         }
 
         return {
             newCategory: function () {
-                var colours = nextColours();
+                var colour = nextColour();
                 var name = nextName();
 
                 return {
-                    background: colours[0],
-                    border: colours[1],
+                    background: colour.background,
+                    border: colour.border,
                     name: name
                 }
             }
         }
     })();
 
-    smax.Chart = (function () {
+    smax.Chart = (function (chartContainerId) {
         Chart.defaults.global.legend.display = false;
 
-        var ctx = document.getElementById("myChart");
+        var chartContainer = $('#' + chartContainerId);
 
-        var myChart = new Chart(ctx, {
+        var chart = new Chart(chartContainer, {
             type: 'bar',
             data: {
                 labels: [],
@@ -178,50 +185,69 @@
 
         return {
             newCategory: function(category) {
-                myChart.config.data.labels.push(category.name);
-                myChart.config.data.datasets[0].data.push(0);
-                myChart.config.data.datasets[0].backgroundColor.push(category.background);
-                myChart.config.data.datasets[0].borderColor.push(category.border);
+                var value = Math.floor(Math.random() * smax.data.maxValue);
+                var index = chart.config.data.datasets[0].data.length;
+                getCategorySlider(index).slider('setValue', value);
+
+                chart.config.data.labels.push(category.name);
+                chart.config.data.datasets[0].data.push(value);
+                chart.config.data.datasets[0].backgroundColor.push(category.background);
+                chart.config.data.datasets[0].borderColor.push(category.border);
             },
             removeCategory: function(index) {
-                myChart.config.data.labels.splice(index, 1);
-                myChart.config.data.datasets[0].data.splice(index, 1);
-                myChart.config.data.datasets[0].backgroundColor.splice(index, 1);
-                myChart.config.data.datasets[0].borderColor.splice(index, 1);
+                removeCategorySlider(index);
+
+                chart.config.data.labels.splice(index, 1);
+                chart.config.data.datasets[0].data.splice(index, 1);
+                chart.config.data.datasets[0].backgroundColor.splice(index, 1);
+                chart.config.data.datasets[0].borderColor.splice(index, 1);
             },
             updateCategoryValue: function(index, value) {
-                myChart.config.data.datasets[0].data[index] = value;
+                chart.config.data.datasets[0].data[index] = value;
             },
             updateChart: function() {
-                myChart.update();
+                chart.update();
             }
         };
-    })();
+    })("chart-container");
 
-    function addNewCategory() {
-        var template = $('#category-control-template');
-        var control = template.children().first().clone().appendTo('#category-controls');
-        control.find("input[use='slider']").slider().on('slide', function (ev) {
-
-            var index = $(ev.target).parent().index(); // TODO - bug here
-            var value = ev.value;
-            smax.Chart.updateCategoryValue(index, value);
-            smax.Chart.updateChart();
-        });
-        control.find("button[use='remove']").click(function (ev) {
-            var index = $(ev.target).parent().parent().parent().index();
-            smax.Chart.removeCategory(index);
-            smax.Chart.updateChart();
-        });
-
-        var newCategory = smax.CategorySource.newCategory();
-        smax.Chart.newCategory(newCategory);
-        smax.Chart.updateChart();
+    function getCategorySlider(index) {
+        return $($('#category-controls').children()[index]).find("input[use='slider']");
     }
 
-    $('#add-category').click(function () {
-        addNewCategory()
-    });
+    function removeCategorySlider(index) {
+        $('#category-controls').children()[index].remove();
+    }
+
+    smax.PageBinder = (function(categoryControlTemplateId, categoryControlsId, addCategoryButtonId) {
+        var template = $('#' + categoryControlTemplateId).children().first();
+
+        $('#' + addCategoryButtonId).click(function () {
+            addNewCategory();
+        });
+
+        function addNewCategory() {
+            var control = template.clone().appendTo('#' + categoryControlsId);
+
+            control.find("input[use='slider']").slider().on('slide', function (ev) {
+                var index = $(ev.target).parent().parent().parent().index();
+                smax.Chart.updateCategoryValue(index, ev.value);
+                smax.Chart.updateChart();
+            });
+            control.find("button[use='remove']").click(function (ev) {
+                var index = $(ev.target).parent().parent().parent().index();
+                smax.Chart.removeCategory(index);
+                smax.Chart.updateChart();
+            });
+
+            var newCategory = smax.CategorySource.newCategory();
+            smax.Chart.newCategory(newCategory);
+            smax.Chart.updateChart();
+        }
+    })('category-control-template', 'category-controls', 'add-category');
+
+
+
 
 </script>
 
