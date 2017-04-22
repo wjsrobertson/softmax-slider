@@ -1,3 +1,8 @@
+Softmax Slider
+==============
 
+A visual aid for playing with the [SoftMax](https://en.wikipedia.org/wiki/Softmax_function) algorithm.
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+### Screenshot
+
+![Screenshot of slider in action](https://github.com/wjsrobertson/softmax-slider/raw/master/img/screenshot.png)
