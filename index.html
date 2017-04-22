@@ -39,9 +39,9 @@
 </div>
 
 <div class="well">
-    <p>Softmax is used in categorisation problems in neural networks to map the final layer of neurons from scalar input values to a probability distribution over different categories.</p>
+    <p>Softmax is used in categorisation problems in neural networks to map the final layer of neurons from scalar input values to a probability distribution over different categories</p>
 
-    <p>In this example the input values for each category can vary on a scale from 0 up to 10</p>
+    <p>In this example the input values for each category can vary on a scale from 0 up to 10 - move the sliders to change the values</p>
 </div>
 
 <div class="row">
@@ -107,10 +107,17 @@
         </div>
 
         <div class="alert alert-success">
-            Note that the total sum of all category probability scores is 1 since it represents a probability distribution.
+            <strong>Categorical distribution: </strong> note that the total sum of all category probability scores is 1 since it represents a probability distribution
+        </div>
+
+        <div class="alert alert-success">
+            <strong>Softmax vs input: </strong> note that softmax values are quite sensitive to input values - a relatively small difference to an input value for a category can cause a large swing in the probability
         </div>
     </div>
+</div>
 
+<div class="well-sm">
+    <p>The sourcecode for this is available on github here - <a href="https://github.com/wjsrobertson/softmax-slider">github.com/wjsrobertson/softmax-slider</a></p>
 </div>
 
 <script>
@@ -141,21 +148,22 @@
                 'Termite', 'Tiger', 'Toad', 'Trout', 'Turkey', 'Turtle', 'Viper', 'Vulture', 'Wallaby', 'Walrus', 'Wasp', 'Weasel', 'Whale', 'Wolf',
                 'Wombat', 'Woodcock', 'Woodpecker', 'Worm', 'Wren', 'Yak', 'Zebra'];
 
-            var backgroundColours = ['rgba(255, 99, 132, 0.2)',
+            var backgroundColours = [
                 'rgba(54, 162, 235, 0.2)',
                 'rgba(255, 206, 86, 0.2)',
                 'rgba(75, 192, 192, 0.2)',
                 'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 99, 132, 0.2)'
             ];
 
             var borderColours = [
-                'rgba(255,99,132,1)',
                 'rgba(54, 162, 235, 1)',
                 'rgba(255, 206, 86, 1)',
                 'rgba(75, 192, 192, 1)',
                 'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                'rgba(255, 159, 64, 1)',
+                'rgba(255,99,132,1)'
             ];
 
             function nextName() {
@@ -381,7 +389,7 @@
                 addNewCategory();
             });
 
-            _.times(3, addNewCategory);
+            _.times(6, addNewCategory);
 
             function addNewCategory() {
                 var template = $('#' + categoryControlTemplateId).children().first();
