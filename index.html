@@ -12,7 +12,17 @@
 
     <style>
         .template {
-            display:none;
+            display: none;
+        }
+
+        .category-name {
+            padding: 3px;
+        }
+
+        #category-controls > div {
+            padding: 3px;
+            border:1px solid;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -22,13 +32,12 @@
     <h1>Panels</h1>
 </div>
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-3">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2 class="panel-title">Category Values</h2>
+                <h2 class="panel-title">Category Weights</h2>
             </div>
             <div class="panel-body">
-
 
                 <div class="form-group">
                     <button id="add-category" type="button" class="btn btn-default btn-md">
@@ -39,23 +48,28 @@
                     </label>
                 </div>
 
-                <legend>Categories</legend>
+                <hr/>
 
                 <div id="category-control-template" class="template">
                     <div class="form-group" use="category-slider">
-                        <div>
+                        <div class="category-slider">
+                            <div use="category-name" class="category-name"></div>
+
                             <button title="remove" use="remove" type="button" class="btn btn-default btn-sm span1">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
 
-                            <input use="slider" type="text" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1"
+                            <input use="slider" type="text" value="" data-slider-min="0" data-slider-max="10" data-slider-step="0.1"
                                    data-slider-value="0" data-slider-selection="after" data-slider-tooltip="hide">
                         </div>
-
                     </div>
                 </div>
 
                 <div id="category-controls" class="form-group">
+                </div>
+
+                <div class="alert alert-info">
+                    Each category weight can vary on a scale from 0 to 10 in this example
                 </div>
             </div>
         </div>
@@ -63,10 +77,20 @@
     <div class="col-sm-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title">Softmax Output</h3>
+                <h3 class="panel-title">Category Probability Scores (Softmax Output)</h3>
             </div>
             <div class="panel-body">
-                <canvas id="chart-container" width="300" height="300"></canvas>
+                <canvas id="softmax-chart-container" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Category Weights (Softmax Input)</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="input-chart-container" width="300" height="300"></canvas>
             </div>
         </div>
     </div>
@@ -76,14 +100,14 @@
 
     var smax = {};
 
-    smax.softmax = function(input) {
-        _.map(input, function(value) {
+    smax.softmax = function (input) {
+        _.map(input, function (value) {
             return value / 2;
         })
     };
 
     smax.data = {
-        maxValue: 100,
+        maxValue: 10,
         raw: [],
         softmax: []
     };
@@ -93,27 +117,22 @@
 
         var colourIndex = -1;
 
-        var names = ['Abe', 'Ada', 'Addy', 'Aggy', 'Al', 'Alex', 'Allie', 'Andy', 'Ann', 'Annie', 'Ara', 'Archie', 'Arly', 'Art', 'Babs',
-            'Barbie', 'Barney', 'Bart', 'Bea', 'Becca', 'Becky', 'Bella', 'Belle', 'Ben', 'Benjy', 'Bennie', 'Berny', 'Bert', 'Bess',
-            'Beth', 'Betsy', 'Betty', 'Bill', 'Billy', 'Birdie', 'Birtie', 'Bob', 'Bobbie', 'Bobby', 'Brad', 'Brody', 'By', 'Cal', 'Cammie',
-            'Carl', 'Carol', 'Cassie', 'Cathy', 'Charlie', 'Chet', 'Chris', 'Chuck', 'Cindy', 'Clara', 'Cliff', 'Connie', 'Crissy',
-            'Curt', 'Cy', 'Dan', 'Danny', 'Dave', 'Davey', 'Deb', 'Debbie', 'Dee', 'Del', 'Della', 'Dennie', 'Dennis', 'Denny', 'Dick',
-            'Dolly', 'Dom', 'Don', 'Donnie', 'Donny', 'Dora', 'Dot', 'Dottie', 'Dotty', 'Drew', 'Ed', 'Eddie', 'Eddy', 'Elaine', 'Ella',
-            'Ellen', 'Emily', 'Emma', 'Eve', 'Fay', 'Flo', 'Flora', 'Fran', 'Frank', 'Frankie', 'Frannie', 'Franny', 'Fred', 'Freda',
-            'Freddie', 'Freddy', 'Gabby', 'Gabe', 'Gail', 'Gene', 'Geoff', 'George', 'Gerrie', 'Gerry', 'Gertie', 'Gil', 'Gina',
-            'Gretta', 'Gus', 'Gwen', 'Hal', 'Hank', 'Hannah', 'Harry', 'Hattie', 'Henny', 'Herb', 'Hetty', 'Hipsie', 'Hugh', 'Iggy', 'Issy',
-            'Izzy', 'Jake', 'Jamie', 'Jan', 'Jay', 'Jean', 'Jeb', 'Jeff', 'Jennie', 'Jenny', 'Jerry', 'Jessie', 'Jim', 'Jimmie', 'Jimmy', 'Jo',
-            'Jody', 'Joe', 'Joey', 'John', 'Jon', 'Josey', 'Josh', 'Joy', 'Judy', 'Julie', 'Kate', 'Kathy', 'Katy', 'Kay', 'Kaye', 'Ken',
-            'Kenny', 'Kim', 'Larry', 'Lee', 'Lena', 'Lenny', 'Leo', 'Leon', 'Les', 'Libby', 'Lilly', 'Linda', 'Lisa', 'Liz', 'Lizzie', 'Lois',
-            'Lorie', 'Lou', 'Lucy', 'Luke', 'Lynn', 'Maddy', 'Madge', 'Madie', 'Maggie', 'Maggy', 'Mandy', 'Marge', 'Margie', 'Margy', 'Mark',
-            'Marty', 'Marv', 'Matt', 'Maud', 'Mel', 'Merv', 'Mick', 'Mickey', 'Mike', 'Mindy', 'Minnie', 'Missy', 'Mitch', 'Monty', 'Nat',
-            'Nate', 'Nathan', 'Neil', 'Newt', 'Nick', 'Nickie', 'Nora', 'Obie', 'Ollie', 'Ozzy', 'Pat', 'Patsy', 'Patty', 'Peggy', 'Penny',
-            'Pete', 'Phil', 'Polly', 'Prissy', 'Prudy', 'Randy', 'Ray', 'Reba', 'Reggie', 'Rena', 'Rich', 'Richie', 'Rick', 'Ricky', 'Rob',
-            'Robby', 'Rod', 'Ron', 'Ronnie', 'Ronny', 'Rose', 'Roz', 'Rube', 'Rudy', 'Russ', 'Rusty', 'Sal', 'Sam', 'Sammy', 'Sandra', 'Sandy',
-            'Scott', 'Scotty', 'Shelly', 'Sherry', 'Sly', 'Stella', 'Steph', 'Steve', 'Sue', 'Sully', 'Susie', 'Tabby', 'Ted', 'Teddy', 'Terry',
-            'Tess', 'Tessa', 'Tessie', 'Thad', 'Theo', 'Thom', 'Tilla', 'Tim', 'Timmy', 'Tina', 'Tish', 'Tisha', 'Toby', 'Tom', 'Tommy', 'Tony',
-            'Tori', 'Torie', 'Torri', 'Torrie', 'Tory', 'Trisha', 'Trixie', 'Trudy', 'Val', 'Van', 'Vanna', 'Vic', 'Vicki', 'Vickie', 'Vicky',
-            'Vin', 'Vince', 'Vinnie', 'Waldo', 'Wendy', 'Wilber', 'Will', 'Willie', 'Wilma', 'Winnie', 'Winny', 'Woody', 'Zach'];
+        var names = [
+            'Aardvark','Albatross','Alligator','Alpaca','Ant','Anteater','Antelope','Ape','Armadillo','Ass','Baboon','Badger','Barracuda','Bat','Bear','Beaver',
+            'Bee','Bison','Boar','Buffalo','Galago','Butterfly','Camel','Caribou','Cat','Caterpillar','Cattle','Chamois','Cheetah','Chicken','Chimpanzee',
+            'Chinchilla','Chough','Clam','Cobra','Cockroach','Cod','Cormorant','Coyote','Crab','Crane','Crocodile','Crow','Curlew','Deer','Dinosaur','Dog',
+            'Dogfish','Dolphin','Donkey','Dotterel','Dove','Dragonfly','Duck','Dugong','Dunlin','Eagle','Echidna','Eel','Eland','Elephant','Elephant seal',
+            'Elk','Emu','Falcon','Ferret','Finch','Fish','Flamingo','Fly','Fox','Frog','Gaur','Gazelle','Gerbil','Giant Panda','Giraffe','Gnat','Gnu','Goat',
+            'Goose','Goldfinch','Goldfish','Gorilla','Goshawk','Grasshopper','Grouse','Guanaco','Guinea fowl','Guinea pig','Gull','Hamster','Hare','Hawk',
+            'Hedgehog','Heron','Herring','Hippopotamus','Hornet','Horse','Human','Hummingbird','Hyena','Jackal','Jaguar','Jellyfish','Kangaroo','Koala',
+            'Komodo dragon','Kouprey','Kudu','Lapwing','Lark','Lemur','Leopard','Lion','Llama','Lobster','Locust','Loris','Louse','Lyrebird','Magpie','Mallard',
+            'Manatee','Marten','Meerkat','Mink','Mole','Monkey','Moose','Mouse','Mosquito','Mule','Narwhal','Newt','Nightingale','Octopus','Okapi','Opossum',
+            'Oryx','Ostrich','Otter','Owl','Ox','Oyster','Panther','Parrot','Partridge','Peafowl','Pelican','Penguin','Pheasant','Pig','Pigeon','Pony',
+            'Porcupine','Porpoise','Prairie Dog','Quail','Quelea','Rabbit','Raccoon','Rail','Ram','Rat','Raven','Red deer','Red panda','Reindeer','Rhinoceros',
+            'Rook','Ruff','Salamander','Salmon','Sand Dollar','Sandpiper','Sardine','Scorpion','Sea lion','Sea Urchin','Seahorse','Seal','Shark','Sheep',
+            'Shrew','Shrimp','Skunk','Snail','Snake','Spider','Squid','Squirrel','Starling','Stingray','Stinkbug','Stork','Swallow','Swan','Tapir','Tarsier',
+            'Termite','Tiger','Toad','Trout','Turkey','Turtle','Vicuña','Viper','Vulture','Wallaby','Walrus','Wasp','Water buffalo','Weasel','Whale','Wolf',
+            'Wolverine','Wombat','Woodcock','Woodpecker','Worm','Wren','Yak','Zebra'];
 
         var backgroundColours = ['rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
@@ -156,12 +175,13 @@
         }
     })();
 
-    smax.Chart = (function (chartContainerId) {
+    smax.Chart = (function (softmaxChartContainerId, inputChartContainerId) {
         Chart.defaults.global.legend.display = false;
 
-        var chartContainer = $('#' + chartContainerId);
+        var chartContainer = $('#' + softmaxChartContainerId);
+        var inputChartContainer = $('#' + inputChartContainerId);
 
-        var chart = new Chart(chartContainer, {
+        var inputChart = new Chart(inputChartContainer, {
             type: 'bar',
             data: {
                 labels: [],
@@ -170,70 +190,114 @@
                     backgroundColor: [],
                     borderColor: [],
                     borderWidth: 1
-                }/*,{
-                    data: [],
-                    backgroundColor: [],
-                    borderColor: [],
-                    borderWidth: 1
-                }*/]
+                }]
             },
             options: {
                 scales: {
                     yAxes: [{
+                        position: 'left',
                         ticks: {
                             beginAtZero: true
+                        }, scaleLabel: {
+                            display: true,
+                            labelString: 'Input value'
                         }
                     }]
                 }
             }
         });
 
-        function updateCategoryValue(index, value) {
-            smax.data.raw[index] = value;
-            chart.config.data.datasets[0].data[index] = value;
+        var softmaxChart = new Chart(chartContainer, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        position: 'left',
+                        ticks: {
+                            beginAtZero: true
+                        }, scaleLabel: {
+                            display: true,
+                            labelString: 'SoftMax output value'
+                        }
+                    }]
+                }
+            }
+        });
+
+        function updateCategoryValue(index, inputValue, softmaxValue) {
+            inputChart.config.data.datasets[0].data[index] = inputValue;
+            softmaxChart.config.data.datasets[0].data[index] = softmaxValue;
         }
 
         return {
-            newCategory: function(category) {
-                var value = Math.floor(Math.random() * smax.data.maxValue);
-                var index = chart.config.data.datasets[0].data.length;
-                getCategorySlider(index).slider('setValue', value);
-                smax.data.raw.push(value);
+            newCategory: function (category) {
+                var index = smax.data.raw.length;
+                var inputValue = Math.random() * smax.data.maxValue;
+                getCategorySlider(index).slider('setValue', inputValue);
+                smax.data.raw.push(inputValue);
+                reclaculate();
 
-                chart.config.data.labels.push(category.name);
-                chart.config.data.datasets[0].data.push(value);
-                chart.config.data.datasets[0].backgroundColor.push(category.background);
-                chart.config.data.datasets[0].borderColor.push(category.border);
+                getCategorySliderContainer(index).style.backgroundColor = category.background;
+                getCategorySliderContainer(index).style.borderColor = category.border;
+                getCategorySliderName(index).text(category.name);
+
+                inputChart.config.data.labels.push(category.name);
+                inputChart.config.data.datasets[0].data.push(inputValue);
+                inputChart.config.data.datasets[0].backgroundColor.push(category.background);
+                inputChart.config.data.datasets[0].borderColor.push(category.border);
+
+                var softmaxValue = smax.data.softmax[index];
+                softmaxChart.config.data.labels.push(category.name);
+                softmaxChart.config.data.datasets[0].data.push(softmaxValue);
+                softmaxChart.config.data.datasets[0].backgroundColor.push(category.background);
+                softmaxChart.config.data.datasets[0].borderColor.push(category.border);
             },
-            removeCategory: function(index) {
+            removeCategory: function (index) {
                 removeCategorySlider(index);
 
                 smax.data.raw.splice(index, 1);
-                chart.config.data.labels.splice(index, 1);
-                chart.config.data.datasets[0].data.splice(index, 1);
-                chart.config.data.datasets[0].backgroundColor.splice(index, 1);
-                chart.config.data.datasets[0].borderColor.splice(index, 1);
+                smax.data.softmax.splice(index, 1);
+                inputChart.config.data.labels.splice(index, 1);
+                inputChart.config.data.datasets[0].data.splice(index, 1);
+                inputChart.config.data.datasets[0].backgroundColor.splice(index, 1);
+                inputChart.config.data.datasets[0].borderColor.splice(index, 1);
+
+                softmaxChart.config.data.labels.splice(index, 1);
+                softmaxChart.config.data.datasets[0].data.splice(index, 1);
+                softmaxChart.config.data.datasets[0].backgroundColor.splice(index, 1);
+                softmaxChart.config.data.datasets[0].borderColor.splice(index, 1);
             },
-            updateCategoryValues: function() {
-                _.forEach(smax.data.raw, function(value, index) {
-                    //getCategorySlider(index).slider('setValue', value);
-                    updateCategoryValue(index, value)
+            updateCategoryValues: function () {
+                _.forEach(smax.data.raw, function (inputValue, index) {
+                    var softmaxValue = smax.data.softmax[index];
+                    updateCategoryValue(index, inputValue, softmaxValue);
+
                 });
             },
-            updateChart: function() {
-                chart.update();
+            render: function () {
+                inputChart.update();
+                softmaxChart.update();
             }
         };
-    })("chart-container");
+    })("softmax-chart-container", "input-chart-container");
 
     function getSliderValues() {
         var sliderControl = $('#category-controls').children();
 
-        var sliders = _.map(sliderControl, function(container){
+        var sliders = _.map(sliderControl, function (container) {
             return $(container).find("input[use='slider']");
         });
 
-        var values = _.map(sliders, function(slider) {
+        var values = _.map(sliders, function (slider) {
             return slider.slider('getValue')[0].value;
         });
 
@@ -241,20 +305,38 @@
     }
 
     function reclaculate() {
-        smax.data.softmax = _.map(smax.data.raw, function(value) {
-            return value / 2;
+        var exps = _.map(smax.data.raw, function (value) {
+            return Math.exp(value);
         });
+
+        var sum = _.sum(exps);
+
+        smax.data.softmax = _.map(exps, function (exp) {
+            return exp / sum;
+        });
+
+        console.log(_.join(smax.data.softmax, ', '));
+
     }
 
     function getCategorySlider(index) {
         return $($('#category-controls').children()[index]).find("input[use='slider']");
     }
 
+    function getCategorySliderName(index) {
+        return $($('#category-controls').children()[index]).find("div[use='category-name']");
+    }
+
+    function getCategorySliderContainer(index) {
+        return $('#category-controls').children()[index];
+    }
+
+
     function removeCategorySlider(index) {
         $('#category-controls').children()[index].remove();
     }
 
-    smax.PageBinder = (function(categoryControlTemplateId, categoryControlsId, addCategoryButtonId) {
+    smax.PageBinder = (function (categoryControlTemplateId, categoryControlsId, addCategoryButtonId) {
         var template = $('#' + categoryControlTemplateId).children().first();
 
         $('#' + addCategoryButtonId).click(function () {
@@ -269,21 +351,19 @@
                 smax.data.raw[index] = ev.value;
                 reclaculate();
                 smax.Chart.updateCategoryValues();
-                smax.Chart.updateChart();
+                smax.Chart.render();
             });
             control.find("button[use='remove']").click(function (ev) {
                 var index = $(ev.target).parent().parent().parent().index();
                 smax.Chart.removeCategory(index);
-                smax.Chart.updateChart();
+                smax.Chart.render();
             });
 
             var newCategory = smax.CategorySource.newCategory();
             smax.Chart.newCategory(newCategory);
-            smax.Chart.updateChart();
+            smax.Chart.render();
         }
     })('category-control-template', 'category-controls', 'add-category');
-
-
 
 
 </script>
