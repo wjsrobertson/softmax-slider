@@ -15,118 +15,153 @@
 </head>
 <body>
 
-    <div class="page-header">
-        <h1>Panels</h1>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Category Values</h2>
+<div class="page-header">
+    <h1>Panels</h1>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Category Values</h2>
+            </div>
+            <div class="panel-body">
+
+
+                <div class="form-group">
+                    <button id="add-category" type="button" class="btn btn-default btn-md">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                    <label for="add-category">
+                        <small>Add new category</small>
+                    </label>
                 </div>
-                <div class="panel-body">
 
+                <div class="form-group">
+                    <button id="experiment" type="button" class="btn btn-default btn-md">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                    <label for="add-category">
+                        <small>Experiment!</small>
+                    </label>
+                </div>
 
+                <legend>Categories</legend>
+
+                <div style="display:none" id="category-control-template">
                     <div class="form-group">
-                        <button id="add-category" type="button" class="btn btn-default btn-md">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </button>
-                        <label for="add-category"><small>Add new category</small></label>
-                    </div>
+                        <div>
+                            <button title="remove" use="remove" type="button" class="btn btn-default btn-sm span1">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
 
-                    <legend>Categories</legend>
-
-                    <div style="display:none" id="category-control-template">
-                        <div class="form-group">
-                            <div>
-                                <button title="remove" use="remove" type="button" class="btn btn-default btn-sm span1">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </button>
-
-                                <input use="slider" type="text" class="px-2 span6" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" data-slider-selection="after" data-slider-tooltip="hide">
-                                <!--
-                                <input type="number" size="5" min="0" max="100" />
-                                -->
-                            </div>
-
+                            <input use="slider" type="text" class="px-2 span6" value="" data-slider-min="0" data-slider-max="100" data-slider-step="1"
+                                   data-slider-value="0" data-slider-selection="after" data-slider-tooltip="hide">
                         </div>
+
                     </div>
-
-                    <div id="category-controls" class="form-group">
-                    </div>
-
-
-
-
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Softmax Output</h3>
-                </div>
-                <div class="panel-body">
-                    <canvas id="myChart" width="300" height="300"></canvas>
+
+                <div id="category-controls" class="form-group">
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-sm-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Softmax Output</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="myChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
+<script>
 
-        var state = {
-            maxCategories: 10,
-            categoryIdSequence: 0,
-            categories: []
-        };
+    smax = {};
 
-        function addNewCategory() {
-            var template = $('#category-control-template');
-            var control = template.children().first().clone().appendTo('#category-controls');
-            control.find("input[use='slider']").slider().on('slide', function(ev){
-                console.log('ok')
-            });
-            control.find("button[use='remove']").click(function(ev){
-                $(ev.target).parent().parent().remove()
-            });
+    smax.CategorySource = (function () {
+        var nameIndex = -1;
+
+        var colourIndex = -1;
+
+        var names = ['Abe', 'Ada', 'Addy', 'Aggy', 'Al', 'Alex', 'Allie', 'Andy', 'Ann', 'Annie', 'Ara', 'Archie', 'Arly', 'Art', 'Babs',
+            'Barbie', 'Barney', 'Bart', 'Bea', 'Becca', 'Becky', 'Bella', 'Belle', 'Ben', 'Benjy', 'Bennie', 'Berny', 'Bert', 'Bess',
+            'Beth', 'Betsy', 'Betty', 'Bill', 'Billy', 'Birdie', 'Birtie', 'Bob', 'Bobbie', 'Bobby', 'Brad', 'Brody', 'By', 'Cal', 'Cammie',
+            'Carl', 'Carol', 'Cassie', 'Cathy', 'Charlie', 'Chet', 'Chris', 'Chuck', 'Cindy', 'Clara', 'Cliff', 'Connie', 'Crissy',
+            'Curt', 'Cy', 'Dan', 'Danny', 'Dave', 'Davey', 'Deb', 'Debbie', 'Dee', 'Del', 'Della', 'Dennie', 'Dennis', 'Denny', 'Dick',
+            'Dolly', 'Dom', 'Don', 'Donnie', 'Donny', 'Dora', 'Dot', 'Dottie', 'Dotty', 'Drew', 'Ed', 'Eddie', 'Eddy', 'Elaine', 'Ella',
+            'Ellen', 'Emily', 'Emma', 'Eve', 'Fay', 'Flo', 'Flora', 'Fran', 'Frank', 'Frankie', 'Frannie', 'Franny', 'Fred', 'Freda',
+            'Freddie', 'Freddy', 'Gabby', 'Gabe', 'Gail', 'Gene', 'Geoff', 'George', 'Gerrie', 'Gerry', 'Gertie', 'Gil', 'Gina',
+            'Gretta', 'Gus', 'Gwen', 'Hal', 'Hank', 'Hannah', 'Harry', 'Hattie', 'Henny', 'Herb', 'Hetty', 'Hipsie', 'Hugh', 'Iggy', 'Issy',
+            'Izzy', 'Jake', 'Jamie', 'Jan', 'Jay', 'Jean', 'Jeb', 'Jeff', 'Jennie', 'Jenny', 'Jerry', 'Jessie', 'Jim', 'Jimmie', 'Jimmy', 'Jo',
+            'Jody', 'Joe', 'Joey', 'John', 'Jon', 'Josey', 'Josh', 'Joy', 'Judy', 'Julie', 'Kate', 'Kathy', 'Katy', 'Kay', 'Kaye', 'Ken',
+            'Kenny', 'Kim', 'Larry', 'Lee', 'Lena', 'Lenny', 'Leo', 'Leon', 'Les', 'Libby', 'Lilly', 'Linda', 'Lisa', 'Liz', 'Lizzie', 'Lois',
+            'Lorie', 'Lou', 'Lucy', 'Luke', 'Lynn', 'Maddy', 'Madge', 'Madie', 'Maggie', 'Maggy', 'Mandy', 'Marge', 'Margie', 'Margy', 'Mark',
+            'Marty', 'Marv', 'Matt', 'Maud', 'Mel', 'Merv', 'Mick', 'Mickey', 'Mike', 'Mindy', 'Minnie', 'Missy', 'Mitch', 'Monty', 'Nat',
+            'Nate', 'Nathan', 'Neil', 'Newt', 'Nick', 'Nickie', 'Nora', 'Obie', 'Ollie', 'Ozzy', 'Pat', 'Patsy', 'Patty', 'Peggy', 'Penny',
+            'Pete', 'Phil', 'Polly', 'Prissy', 'Prudy', 'Randy', 'Ray', 'Reba', 'Reggie', 'Rena', 'Rich', 'Richie', 'Rick', 'Ricky', 'Rob',
+            'Robby', 'Rod', 'Ron', 'Ronnie', 'Ronny', 'Rose', 'Roz', 'Rube', 'Rudy', 'Russ', 'Rusty', 'Sal', 'Sam', 'Sammy', 'Sandra', 'Sandy',
+            'Scott', 'Scotty', 'Shelly', 'Sherry', 'Sly', 'Stella', 'Steph', 'Steve', 'Sue', 'Sully', 'Susie', 'Tabby', 'Ted', 'Teddy', 'Terry',
+            'Tess', 'Tessa', 'Tessie', 'Thad', 'Theo', 'Thom', 'Tilla', 'Tim', 'Timmy', 'Tina', 'Tish', 'Tisha', 'Toby', 'Tom', 'Tommy', 'Tony',
+            'Tori', 'Torie', 'Torri', 'Torrie', 'Tory', 'Trisha', 'Trixie', 'Trudy', 'Val', 'Van', 'Vanna', 'Vic', 'Vicki', 'Vickie', 'Vicky',
+            'Vin', 'Vince', 'Vinnie', 'Waldo', 'Wendy', 'Wilber', 'Will', 'Willie', 'Wilma', 'Winnie', 'Winny', 'Woody', 'Zach'];
+
+        var backgroundColours = ['rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'];
+
+        var borderColours = [
+            'rgba(255,99,132,1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ];
+
+        function nextName() {
+            nameIndex = (nameIndex + 1) % names.length;
+            return names[nameIndex]
         }
 
-        $('#add-category').click(function() {
-            addNewCategory()
-        });
+        function nextColours() {
+            colourIndex = (colourIndex + 1) % backgroundColours.length;
+            return [backgroundColours[colourIndex], borderColours[colourIndex]];
+        }
 
-        _.forEach(_.range(0, 6), function(id){
-            $('#dp' + id).slider()
-                .on('slide', function(ev){
-                    console.log('ok')
-                });
-        });
+        return {
+            newCategory: function () {
+                var colours = nextColours();
+                var name = nextName();
+
+                return {
+                    background: colours[0],
+                    border: colours[1],
+                    name: name
+                }
+            }
+        }
+    })();
+
+    smax.Chart = (function () {
+        Chart.defaults.global.legend.display = false;
 
         var ctx = document.getElementById("myChart");
+
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                labels: [],
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
                     borderWidth: 1
                 }]
             },
@@ -134,13 +169,94 @@
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero:true
+                            beginAtZero: true
                         }
                     }]
                 }
             }
         });
-    </script>
+
+        return {
+            newCategory: function(category) {
+                myChart.config.data.labels.push(category.name);
+                myChart.config.data.datasets[0].data.push(0);
+                myChart.config.data.datasets[0].backgroundColor.push(category.background);
+                myChart.config.data.datasets[0].borderColor.push(category.border);
+            },
+            removeCategory: function(index) {
+                myChart.config.data.labels.splice(index, 1);
+                myChart.config.data.datasets[0].data.splice(index, 1);
+                myChart.config.data.datasets[0].backgroundColor.splice(index, 1);
+                myChart.config.data.datasets[0].borderColor.splice(index, 1);
+            },
+            updateCategoryValue: function(index, value) {
+                myChart.config.data.datasets[0].data[index] = value;
+            },
+            updateChart: function() {
+                myChart.update();
+            }
+        };
+    })();
+
+    function addNewCategory() {
+        var template = $('#category-control-template');
+        var control = template.children().first().clone().appendTo('#category-controls');
+        control.find("input[use='slider']").slider().on('slide', function (ev) {
+
+            var index = $(ev.target).parent().index(); // TODO - bug here
+            var value = ev.value;
+            smax.Chart.updateCategoryValue(index, value);
+            smax.Chart.updateChart();
+        });
+        control.find("button[use='remove']").click(function (ev) {
+            var index = $(ev.target).parent().parent().parent().index();
+            smax.Chart.removeCategory(index);
+            smax.Chart.updateChart();
+        });
+
+        var newCategory = smax.CategorySource.newCategory();
+        smax.Chart.newCategory(newCategory);
+        smax.Chart.updateChart();
+    }
+
+    $('#add-category').click(function () {
+        addNewCategory()
+    });
+
+
+    /* // update a column value
+     var num = Math.floor(Math.random() * 20);
+     myChart.config.data.datasets[0].data[1] = num;
+     myChart.update();
+     */
+
+    /* // add a column
+     var num = Math.floor(Math.random() * 20);
+     myChart.config.data.labels.push('woot');
+     myChart.config.data.datasets[0].data.push(num);
+     myChart.config.data.datasets[0].backgroundColor.push('rgba(255, 159, 64, 0.2)');
+     myChart.config.data.datasets[0].borderColor.push('rgba(255, 159, 64, 1)');
+     myChart.update();
+     */
+
+    /* // remove a column
+     var index = 2;
+     myChart.config.data.labels.splice(index, 1);
+     myChart.config.data.datasets[0].data.splice(index, 1);
+     myChart.config.data.datasets[0].backgroundColor.splice(index, 1);
+     myChart.config.data.datasets[0].borderColor.splice(index, 1);
+     myChart.update();
+     */
+
+    function experiment() {
+
+    }
+
+    $('#experiment').click(function () {
+        experiment()
+    });
+
+</script>
 
 </body>
 </html>
