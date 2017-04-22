@@ -274,13 +274,13 @@ function smax(categoryControlTemplateId, categoryControlsId, addCategoryButtonId
             var control = template.clone().appendTo('#' + categoryControlsId);
 
             control.find("input[use='slider']").slider().on('slide', function (ev) {
-                var index = $(ev.target).parent().parent().parent().index();
+                var index = $($(ev.target).parents('div')[2]).index();
 
                 dataManager.setRawValue(index, ev.value);
                 chart.updateCategoryValues(DataManager.getData());
             });
             control.find("button[use='remove']").click(function (ev) {
-                var index = $(ev.target).parent().parent().parent().index();
+                var index = $($(ev.target).parents('div')[1]).index();
 
                 categoryWidget.removeCategorySlider(index);
                 dataManager.remove(index);
