@@ -170,7 +170,12 @@
                     backgroundColor: [],
                     borderColor: [],
                     borderWidth: 1
-                }]
+                }/*,{
+                    data: [],
+                    backgroundColor: [],
+                    borderColor: [],
+                    borderWidth: 1
+                }*/]
             },
             options: {
                 scales: {
@@ -183,11 +188,17 @@
             }
         });
 
+        function updateCategoryValue(index, value) {
+            smax.data.raw[index] = value;
+            chart.config.data.datasets[0].data[index] = value;
+        }
+
         return {
             newCategory: function(category) {
                 var value = Math.floor(Math.random() * smax.data.maxValue);
                 var index = chart.config.data.datasets[0].data.length;
                 getCategorySlider(index).slider('setValue', value);
+                smax.data.raw.push(value);
 
                 chart.config.data.labels.push(category.name);
                 chart.config.data.datasets[0].data.push(value);
@@ -197,19 +208,43 @@
             removeCategory: function(index) {
                 removeCategorySlider(index);
 
+                smax.data.raw.splice(index, 1);
                 chart.config.data.labels.splice(index, 1);
                 chart.config.data.datasets[0].data.splice(index, 1);
                 chart.config.data.datasets[0].backgroundColor.splice(index, 1);
                 chart.config.data.datasets[0].borderColor.splice(index, 1);
             },
-            updateCategoryValue: function(index, value) {
-                chart.config.data.datasets[0].data[index] = value;
+            updateCategoryValues: function() {
+                _.forEach(smax.data.raw, function(value, index) {
+                    //getCategorySlider(index).slider('setValue', value);
+                    updateCategoryValue(index, value)
+                });
             },
             updateChart: function() {
                 chart.update();
             }
         };
     })("chart-container");
+
+    function getSliderValues() {
+        var sliderControl = $('#category-controls').children();
+
+        var sliders = _.map(sliderControl, function(container){
+            return $(container).find("input[use='slider']");
+        });
+
+        var values = _.map(sliders, function(slider) {
+            return slider.slider('getValue')[0].value;
+        });
+
+        return values;
+    }
+
+    function reclaculate() {
+        smax.data.softmax = _.map(smax.data.raw, function(value) {
+            return value / 2;
+        });
+    }
 
     function getCategorySlider(index) {
         return $($('#category-controls').children()[index]).find("input[use='slider']");
@@ -231,7 +266,9 @@
 
             control.find("input[use='slider']").slider().on('slide', function (ev) {
                 var index = $(ev.target).parent().parent().parent().index();
-                smax.Chart.updateCategoryValue(index, ev.value);
+                smax.data.raw[index] = ev.value;
+                reclaculate();
+                smax.Chart.updateCategoryValues();
                 smax.Chart.updateChart();
             });
             control.find("button[use='remove']").click(function (ev) {

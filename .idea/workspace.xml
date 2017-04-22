@@ -26,8 +26,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.29032257">
-              <caret line="195" column="14" selection-start-line="195" selection-start-column="14" selection-end-line="195" selection-end-column="14" />
+            <state vertical-scroll-proportion="0.37565038">
+              <caret line="266" column="48" selection-start-line="266" selection-start-column="48" selection-end-line="266" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -972,7 +972,7 @@
       <option name="number" value="Default" />
       <updated>1492635761321</updated>
       <workItem from="1492635762891" duration="8932000" />
-      <workItem from="1492808090550" duration="18503000" />
+      <workItem from="1492808090550" duration="20644000" />
     </task>
     <task id="LOCAL-00001" summary="Got dynamic updates working">
       <created>1492820871259</created>
@@ -986,11 +986,17 @@
       <option name="project" value="LOCAL" />
       <updated>1492820966503</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Removing categories now works">
+      <created>1492858509753</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1492858509753</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27435000" />
+    <option name="totallyTimeSpent" value="29576000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="52" width="1562" height="1148" extended-state="4" />
@@ -1069,11 +1075,12 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Got dynamic updates working" />
     <MESSAGE value="Delete some cruft" />
-    <option name="LAST_COMMIT_MESSAGE" value="Delete some cruft" />
+    <MESSAGE value="Removing categories now works" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removing categories now works" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1122,8 +1129,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.29032257">
-          <caret line="195" column="14" selection-start-line="195" selection-start-column="14" selection-end-line="195" selection-end-column="14" />
+        <state vertical-scroll-proportion="0.37565038">
+          <caret line="266" column="48" selection-start-line="266" selection-start-column="48" selection-end-line="266" selection-end-column="48" />
           <folding />
         </state>
       </provider>
