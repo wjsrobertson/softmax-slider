@@ -1,5 +1,7 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="libs/Chart.bundle.js"></script>
     <script src="libs/jquery-3.2.1.min.js"></script>
     <script src="libs/bootstrap/js/bootstrap.js"></script>
@@ -26,13 +28,24 @@
         }
     </style>
 </head>
-<body>
+<body class="container">
 
 <div class="page-header">
-    <h1>Panels</h1>
+    <h1>Softmax Slider</h1>
 </div>
+
+<div class="lead">
+    A visual aid for playing with the <a href="https://en.wikipedia.org/wiki/Softmax_function">SoftMax</a> algorithm.
+</div>
+
+<div class="well">
+    <p>Softmax is used in categorisation problems in neural networks to map the final layer of neurons with a scalar input to a probability distribution over different categories.</p>
+
+    <p>In this example the input values for each category can vary on a scale from 0 up to 10</p>
+</div>
+
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title">Category Weights</h2>
@@ -65,33 +78,39 @@
 
                 <div id="category-controls" class="form-group">
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Category Probability Scores (Softmax Output)</h3>
+                    </div>
+                    <div class="panel-body">
+                        <canvas id="softmax-chart-container" width="300" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
 
-                <div class="alert alert-info">
-                    Each category weight can vary on a scale from 0 to 10 in this example
+            <div class="col-sm-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Category Weights (Softmax Input)</h3>
+                    </div>
+                    <div class="panel-body">
+                        <canvas id="input-chart-container" width="300" height="300"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Category Probability Scores (Softmax Output)</h3>
-            </div>
-            <div class="panel-body">
-                <canvas id="softmax-chart-container" width="300" height="300"></canvas>
-            </div>
+
+        <div class="alert alert-success">
+            Note that the total sum of all category probability scores is 1 since it represents a probability distribution.
         </div>
     </div>
-    <div class="col-sm-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Category Weights (Softmax Input)</h3>
-            </div>
-            <div class="panel-body">
-                <canvas id="input-chart-container" width="300" height="300"></canvas>
-            </div>
-        </div>
-    </div>
+
 </div>
 
 <script>
@@ -362,7 +381,7 @@
                 addNewCategory();
             });
 
-            _.times(4, addNewCategory);
+            _.times(3, addNewCategory);
 
             function addNewCategory() {
                 var template = $('#' + categoryControlTemplateId).children().first();
